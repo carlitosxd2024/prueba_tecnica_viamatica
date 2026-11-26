@@ -4,3 +4,6 @@ vendor/
 *.log
 dist/
 .angular/
+/backend/storage/*.key
+/backend/storage/framework/cache/*
+!/backend/storage/framework/cache/.gitkeep
