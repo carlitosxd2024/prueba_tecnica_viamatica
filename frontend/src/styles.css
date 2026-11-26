@@ -23,7 +23,7 @@ a { color: var(--primary); }
 .content { flex: 1; padding: 28px; min-width: 0; }
 
 /* Cards, forms */
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
+.card { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 18px; }
 .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 18px; }
 label { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 600; margin-top: 12px; }
 input, select { padding: 9px 11px; border: 1px solid #cbd2de; border-radius: 8px; font: inherit; background: #fff; }
