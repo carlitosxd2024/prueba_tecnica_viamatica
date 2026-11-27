@@ -54,7 +54,7 @@ import { erroresDe, identificacionValidator, passwordValidator, usernameValidato
                 </td>
                 <td class="actions">
                   <button class="btn btn-sm" [disabled]="esAdminAjeno(u)" (click)="editar(u)">Editar</button>
-                  <button class="btn btn-sm btn-danger" [disabled]="Number(u.EsAdmin) === 1" (click)="eliminar(u)">Eliminar</button>
+                  <button class="btn btn-sm btn-danger" [disabled]="esAdmin(u)" (click)="eliminar(u)">Eliminar</button>
                 </td>
               </tr>
             } @empty { <tr><td colspan="8" class="muted">Sin resultados.</td></tr> }
@@ -166,8 +166,12 @@ export class UsuariosComponent implements OnInit {
     }
   }
 
+  esAdmin(u: Usuario) {
+    return Number(u.EsAdmin) === 1;
+  }
+
   esAdminAjeno(u: Usuario) {
-    return Number(u.EsAdmin) === 1 && u.idUsuario !== this.auth.user()?.idUsuario;
+    return this.esAdmin(u) && u.idUsuario !== this.auth.user()?.idUsuario;
   }
 
   buscar(pagina = 1) {
