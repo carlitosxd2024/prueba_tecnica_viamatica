@@ -15,7 +15,7 @@ export class AuthService {
 
   readonly user = signal<Usuario | null>(this.readUser());
   readonly menu = signal<MenuItem[]>([]);
-  readonly isAdmin = computed(() => !!this.user()?.EsAdmin);
+  readonly isAdmin = computed(() => Number(this.user()?.EsAdmin) === 1);
 
   get token(): string | null {
     try { return sessionStorage.getItem(TOKEN_KEY); } catch { return null; }
