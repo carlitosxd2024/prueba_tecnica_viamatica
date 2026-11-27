@@ -2,10 +2,6 @@
 
 namespace App\Domain\User;
 
-/**
- * Reglas de validacion del dominio (PHP puro, sin dependencias del framework).
- * Cada metodo devuelve una lista de mensajes de error (vacia = valido).
- */
 final class UserRules
 {
     /** @return string[] */

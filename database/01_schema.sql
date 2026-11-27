@@ -1,14 +1,9 @@
-/* =====================================================================
-   PRUEBA PHP LARAVEL & ANGULAR - Esquema SQL Server
-   Ejecutar en orden: 01_schema.sql -> 02_stored_procedures.sql -> 03_seed.sql
-   ===================================================================== */
 IF DB_ID(N'PruebaLogin') IS NULL
     CREATE DATABASE PruebaLogin;
 GO
 USE PruebaLogin;
 GO
 
-/* ------------------------------ Persona ------------------------------ */
 CREATE TABLE dbo.Persona (
     idPersona       INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Persona PRIMARY KEY,
     Nombres         VARCHAR(60)  NOT NULL,
@@ -19,11 +14,9 @@ CREATE TABLE dbo.Persona (
     FechaCreacion   DATETIME2(0) NOT NULL CONSTRAINT DF_Persona_FechaCreacion DEFAULT SYSDATETIME()
 );
 GO
--- Identificacion unica entre registros no eliminados
 CREATE UNIQUE INDEX UX_Persona_Identificacion ON dbo.Persona(Identificacion) WHERE Eliminado = 0;
 GO
 
-/* ------------------------------ Usuarios ----------------------------- */
 CREATE TABLE dbo.Usuarios (
     idUsuario        INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Usuarios PRIMARY KEY,
     UserName         VARCHAR(50)  NOT NULL,
@@ -40,13 +33,11 @@ CREATE TABLE dbo.Usuarios (
     CONSTRAINT CK_Usuarios_Status CHECK (RTRIM(Status) IN ('ACTIVO','INACTIVO','BLOQUEADO'))
 );
 GO
--- Un usuario/persona = maximo 1 cuenta; UserName y Mail unicos (sobre no eliminados)
 CREATE UNIQUE INDEX UX_Usuarios_UserName ON dbo.Usuarios(UserName) WHERE Eliminado = 0;
 CREATE UNIQUE INDEX UX_Usuarios_Mail     ON dbo.Usuarios(Mail)     WHERE Eliminado = 0;
 CREATE UNIQUE INDEX UX_Usuarios_Persona  ON dbo.Usuarios(Persona_idPersona) WHERE Eliminado = 0;
 GO
 
-/* --------------------------------- Rol ------------------------------- */
 CREATE TABLE dbo.Rol (
     idRol     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Rol PRIMARY KEY,
     RolName   VARCHAR(50) NOT NULL,
@@ -64,7 +55,6 @@ CREATE TABLE dbo.Rol_Usuarios (
 );
 GO
 
-/* ------------------------------ RolOpciones -------------------------- */
 CREATE TABLE dbo.RolOpciones (
     idOpcion     INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_RolOpciones PRIMARY KEY,
     NombreOpcion VARCHAR(50)  NOT NULL,
@@ -83,7 +73,6 @@ CREATE TABLE dbo.Rol_RolOpciones (
 );
 GO
 
-/* ------------------------------- Sessions ---------------------------- */
 CREATE TABLE dbo.Sessions (
     idSession        INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_Sessions PRIMARY KEY,
     FechaIngreso     DATETIME2(0) NOT NULL CONSTRAINT DF_Sessions_Ingreso DEFAULT SYSDATETIME(),
@@ -96,7 +85,6 @@ CREATE TABLE dbo.Sessions (
 CREATE INDEX IX_Sessions_Usuario ON dbo.Sessions(usuarios_idUsuario, FechaIngreso DESC);
 GO
 
-/* ---------------------- Intentos de login fallidos ------------------- */
 CREATE TABLE dbo.LoginFallidos (
     idFallido        INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_LoginFallidos PRIMARY KEY,
     usuarios_idUsuario INT NOT NULL,
@@ -107,7 +95,6 @@ CREATE TABLE dbo.LoginFallidos (
 CREATE INDEX IX_LoginFallidos_Usuario ON dbo.LoginFallidos(usuarios_idUsuario, Fecha DESC);
 GO
 
-/* ----------------------- Recuperacion de contrasena ------------------ */
 CREATE TABLE dbo.PasswordResets (
     idReset          INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_PasswordResets PRIMARY KEY,
     usuarios_idUsuario INT NOT NULL,

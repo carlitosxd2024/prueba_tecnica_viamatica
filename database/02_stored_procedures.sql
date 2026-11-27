@@ -1,14 +1,6 @@
-/* =====================================================================
-   Stored Procedures - PruebaLogin (SQL Server 2017+)
-   Los errores de negocio se lanzan con THROW y mensaje "ERR_CODIGO: texto";
-   el backend Laravel los traduce a respuestas HTTP 4xx.
-   ===================================================================== */
 USE PruebaLogin;
 GO
 
-/* ------------------------------------------------------------------ */
-/* Utilidades                                                          */
-/* ------------------------------------------------------------------ */
 CREATE OR ALTER FUNCTION dbo.fn_EsAdmin (@idUsuario INT)
 RETURNS BIT
 AS
@@ -23,7 +15,6 @@ BEGIN
 END
 GO
 
--- Genera el correo unico: base@mail.com, base1@mail.com, base2@mail.com ...
 CREATE OR ALTER PROCEDURE dbo.sp_Mail_Generar
     @Base VARCHAR(100),
     @Mail VARCHAR(120) OUTPUT
@@ -40,9 +31,6 @@ BEGIN
 END
 GO
 
-/* ------------------------------------------------------------------ */
-/* Roles (CRUD con eliminacion logica)                                 */
-/* ------------------------------------------------------------------ */
 CREATE OR ALTER PROCEDURE dbo.sp_Rol_Listar
 AS
 BEGIN
@@ -90,9 +78,6 @@ BEGIN
 END
 GO
 
-/* ------------------------------------------------------------------ */
-/* Usuarios / Persona                                                  */
-/* ------------------------------------------------------------------ */
 CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Crear
     @Nombres         VARCHAR(60),
     @Apellidos       VARCHAR(60),
@@ -150,7 +135,6 @@ BEGIN
 END
 GO
 
--- Listado con filtros (solo administrador) y paginacion
 CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Listar
     @Texto         VARCHAR(100) = NULL,   -- busca en nombres, apellidos, identificacion, usuario o correo
     @Status        VARCHAR(20)  = NULL,
@@ -186,7 +170,6 @@ BEGIN
 END
 GO
 
--- Reglas: admin actualiza a todos menos a otros administradores; un usuario normal solo a si mismo.
 CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Actualizar
     @idSolicitante   INT,
     @idUsuario       INT,
@@ -233,7 +216,6 @@ BEGIN
 END
 GO
 
--- Solo administrador (validado tambien aqui). Al reactivar se reinician los intentos fallidos.
 CREATE OR ALTER PROCEDURE dbo.sp_Usuario_CambiarEstado
     @idSolicitante INT,
     @idUsuario     INT,
@@ -256,7 +238,6 @@ BEGIN
 END
 GO
 
--- Eliminacion logica (persona + usuario)
 CREATE OR ALTER PROCEDURE dbo.sp_Usuario_Eliminar
     @idSolicitante INT,
     @idUsuario     INT
@@ -283,10 +264,6 @@ BEGIN
 END
 GO
 
-/* ------------------------------------------------------------------ */
-/* Login / Sesiones                                                    */
-/* ------------------------------------------------------------------ */
--- Busca por correo o nombre de usuario. Cierra sesiones vencidas (mas de @TtlMinutos sin cierre).
 CREATE OR ALTER PROCEDURE dbo.sp_Usuario_ObtenerLogin
     @Identificador VARCHAR(120),
     @TtlMinutos    INT = 60
@@ -311,7 +288,6 @@ BEGIN
 END
 GO
 
--- Registra intento fallido. Al tercer intento fallido bloquea al usuario.
 CREATE OR ALTER PROCEDURE dbo.sp_Login_RegistrarFallido
     @idUsuario INT,
     @Ip        VARCHAR(45) = NULL
@@ -330,7 +306,6 @@ BEGIN
 END
 GO
 
--- Inicio de sesion exitoso: marca sesion activa, guarda los intentos fallidos previos y los reinicia.
 CREATE OR ALTER PROCEDURE dbo.sp_Sesion_Iniciar
     @idUsuario INT,
     @Ip        VARCHAR(45) = NULL
@@ -363,7 +338,6 @@ BEGIN
 END
 GO
 
--- Existe sesion abierta (usado para invalidar tokens de sesiones ya cerradas)
 CREATE OR ALTER PROCEDURE dbo.sp_Sesion_EstaActiva
     @idSession INT
 AS
@@ -374,7 +348,6 @@ BEGIN
 END
 GO
 
--- Historial de inicios/cierres de sesion de un usuario (rol con permiso)
 CREATE OR ALTER PROCEDURE dbo.sp_Sesion_Historial
     @idUsuario INT,
     @Top       INT = 50
@@ -390,13 +363,11 @@ BEGIN
 END
 GO
 
--- Pantalla de bienvenida: sesion actual y la anterior + fallidos acumulados
 CREATE OR ALTER PROCEDURE dbo.sp_Sesion_Resumen
     @idUsuario INT
 AS
 BEGIN
     SET NOCOUNT ON;
-    -- Dos ultimas sesiones: la actual (fila 1) y la anterior (fila 2)
     SELECT TOP 2 idSession, FechaIngreso, FechaCierre, IntentosFallidosPrevios, Ip
       FROM dbo.Sessions WHERE usuarios_idUsuario = @idUsuario
      ORDER BY FechaIngreso DESC, idSession DESC;
@@ -407,9 +378,6 @@ BEGIN
 END
 GO
 
-/* ------------------------------------------------------------------ */
-/* Menu dinamico segun rol                                             */
-/* ------------------------------------------------------------------ */
 CREATE OR ALTER PROCEDURE dbo.sp_Menu_PorUsuario
     @idUsuario INT
 AS
@@ -425,15 +393,11 @@ BEGIN
 END
 GO
 
-/* ------------------------------------------------------------------ */
-/* Dashboard (solo administrador)                                      */
-/* ------------------------------------------------------------------ */
 CREATE OR ALTER PROCEDURE dbo.sp_Dashboard_Indicadores
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- 1) Totales de usuarios
     SELECT COUNT(*)                                                   AS TotalUsuarios,
            SUM(CASE WHEN SessionActive = 'S' THEN 1 ELSE 0 END)       AS ConSesionActiva,
            SUM(CASE WHEN SessionActive = 'N' THEN 1 ELSE 0 END)       AS ConSesionInactiva,
@@ -442,28 +406,22 @@ BEGIN
            SUM(CASE WHEN RTRIM(Status) = 'BLOQUEADO' THEN 1 ELSE 0 END) AS Bloqueados
       FROM dbo.Usuarios WHERE Eliminado = 0;
 
-    -- 2) Fallidos por dia (ultimos 7 dias)
     SELECT CAST(Fecha AS DATE) AS Dia, COUNT(*) AS Fallidos
       FROM dbo.LoginFallidos
      WHERE Fecha >= DATEADD(DAY, -6, CAST(SYSDATETIME() AS DATE))
      GROUP BY CAST(Fecha AS DATE)
      ORDER BY Dia;
 
-    -- 3) Top usuarios con mas intentos fallidos
     SELECT TOP 5 u.UserName, u.Mail, COUNT(*) AS Fallidos, RTRIM(u.Status) AS Status
       FROM dbo.LoginFallidos lf
       JOIN dbo.Usuarios u ON u.idUsuario = lf.usuarios_idUsuario
      GROUP BY u.UserName, u.Mail, u.Status
      ORDER BY COUNT(*) DESC;
 
-    -- 4) Total de fallidos
     SELECT COUNT(*) AS TotalFallidos FROM dbo.LoginFallidos;
 END
 GO
 
-/* ------------------------------------------------------------------ */
-/* Recuperacion de contrasena                                          */
-/* ------------------------------------------------------------------ */
 CREATE OR ALTER PROCEDURE dbo.sp_Password_SolicitarReset
     @Mail      VARCHAR(120),
     @TokenHash VARCHAR(64),

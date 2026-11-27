@@ -24,7 +24,6 @@ class UsuarioController
         return $r->attributes->get('auth_user');
     }
 
-    /** Un usuario no administrador solo puede ver/consultar lo suyo. */
     private function soloPropioOAdmin(Request $r, int $id): void
     {
         $me = $this->me($r);

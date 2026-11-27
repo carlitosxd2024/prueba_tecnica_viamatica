@@ -2,10 +2,6 @@
 
 namespace App\Domain\User;
 
-/**
- * Genera la base del correo: inicial del primer nombre + primer apellido + inicial del segundo apellido.
- *   Juan Alberto / Piguave Loor  =>  jpiguavel   (el @mail.com y el sufijo numerico los agrega el SP)
- */
 final class MailGenerator
 {
     private const MAP = [

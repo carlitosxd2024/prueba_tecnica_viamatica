@@ -6,7 +6,6 @@ use App\Domain\Shared\DomainException;
 use Closure;
 use Illuminate\Http\Request;
 
-/** Uso: ->middleware('role:ADMINISTRADOR') */
 class RequireRole
 {
     public function handle(Request $request, Closure $next, string $role)

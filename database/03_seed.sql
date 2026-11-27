@@ -1,8 +1,3 @@
-/* =====================================================================
-   Datos iniciales: roles, opciones de menu y usuarios de prueba
-   Admin:   Admin2024 / admin@mail.com   clave: Admin#2024
-   Usuario: Usuario2024 / usuario@mail.com clave: User#2024
-   ===================================================================== */
 USE PruebaLogin;
 GO
 
@@ -14,7 +9,6 @@ INSERT INTO dbo.RolOpciones (NombreOpcion, Ruta, Icono, Orden) VALUES
  ('Mantenimiento Usuario', '/usuarios',    'users',     3),
  ('Historial de sesiones', '/historial',   'history',   4);
 
--- ADMINISTRADOR: todo. USUARIO: bienvenida + mantenimiento (solo sus datos)
 INSERT INTO dbo.Rol_RolOpciones (Rol_idRol, RolOpciones_idOpcion)
 SELECT r.idRol, o.idOpcion FROM dbo.Rol r CROSS JOIN dbo.RolOpciones o WHERE r.RolName = 'ADMINISTRADOR';
 
@@ -23,7 +17,6 @@ SELECT r.idRol, o.idOpcion FROM dbo.Rol r JOIN dbo.RolOpciones o
   ON o.NombreOpcion IN ('Bienvenida','Mantenimiento Usuario') WHERE r.RolName = 'USUARIO';
 GO
 
--- Usuarios semilla (hash bcrypt)
 DECLARE @idPersona INT, @idUsuario INT;
 
 INSERT INTO dbo.Persona (Nombres, Apellidos, Identificacion, FechaNacimiento)

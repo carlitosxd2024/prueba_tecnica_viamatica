@@ -1,6 +1,5 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
-/** Mismas reglas que el backend (UserRules.php), para validar antes de consumir el servicio. */
 export const usernameValidator: ValidatorFn = (c: AbstractControl): ValidationErrors | null => {
   const v: string = c.value ?? '';
   if (!v) return null;

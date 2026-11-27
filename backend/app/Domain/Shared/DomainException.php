@@ -4,9 +4,6 @@ namespace App\Domain\Shared;
 
 use RuntimeException;
 
-/**
- * Error de negocio con codigo HTTP asociado. Se renderiza como JSON en bootstrap/app.php.
- */
 class DomainException extends RuntimeException
 {
     public function __construct(

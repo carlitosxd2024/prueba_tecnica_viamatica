@@ -8,10 +8,6 @@ use App\Infrastructure\Persistence\SqlServerGateway;
 use Closure;
 use Illuminate\Http\Request;
 
-/**
- * Valida el JWT, que la sesion siga abierta en BD (un cierre de sesion invalida el token)
- * y que el usuario siga ACTIVO.
- */
 class JwtAuthenticate
 {
     public function __construct(private JwtService $jwt, private SqlServerGateway $db) {}

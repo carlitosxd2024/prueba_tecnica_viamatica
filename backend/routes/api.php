@@ -5,24 +5,20 @@ use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
 
-// Publicas
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [AuthController::class, 'forgot']);
     Route::post('reset-password', [AuthController::class, 'reset']);
 });
 
-// Autenticadas (JWT + sesion activa en BD)
 Route::middleware('jwt')->group(function () {
     Route::post('auth/logout', [AuthController::class, 'logout']);
     Route::get('bienvenida', [AuthController::class, 'bienvenida']);
     Route::get('menu', [CatalogoController::class, 'menu']);
 
-    // Cualquier usuario: ver y actualizar lo propio (la regla fina vive en el SP)
     Route::get('usuarios/{id}', [UsuarioController::class, 'show'])->whereNumber('id');
     Route::put('usuarios/{id}', [UsuarioController::class, 'update'])->whereNumber('id');
 
-    // Solo ADMINISTRADOR
     Route::middleware('role:ADMINISTRADOR')->group(function () {
         Route::get('dashboard', [CatalogoController::class, 'dashboard']);
 

@@ -7,12 +7,6 @@ use Illuminate\Support\Facades\DB;
 use PDO;
 use PDOException;
 
-/**
- * Unica puerta de entrada a los Stored Procedures de SQL Server.
- * - call():  devuelve TODOS los result sets del SP (lista de listas de filas).
- * - rows():  atajo que devuelve solo el primer result set.
- * - Traduce los errores "ERR_CODIGO: mensaje" lanzados por THROW a DomainException.
- */
 class SqlServerGateway
 {
     private const STATUS = [
@@ -67,7 +61,6 @@ class SqlServerGateway
     private function normalize(array $row): array
     {
         foreach ($row as $k => $v) {
-            // datetime2 -> ISO 8601 (Angular lo interpreta directamente)
             if (is_string($v) && preg_match('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', $v)) {
                 $row[$k] = str_replace(' ', 'T', substr($v, 0, 19));
             }
@@ -83,6 +76,6 @@ class SqlServerGateway
         if (preg_match('/(ERR_[A-Z_]+):\s*([^\n\[]+)/', $e->getMessage(), $m)) {
             return new DomainException(trim($m[2]), self::STATUS[$m[1]] ?? 422, $m[1]);
         }
-        return $e; // error tecnico real: lo maneja el handler de Laravel
+        return $e;
     }
 }

@@ -21,7 +21,6 @@ class AuthService
         $ttl = config('jwt.ttl_minutes');
         $u = $this->db->first('sp_Usuario_ObtenerLogin', ['Identificador' => $identificador, 'TtlMinutos' => $ttl]);
 
-        // Mensaje generico: no revelamos si el usuario existe
         if (!$u) {
             throw new DomainException('Credenciales invalidas.', 401, 'ERR_CREDENTIALS');
         }
@@ -41,7 +40,6 @@ class AuthService
             throw new DomainException("Contrasena incorrecta. Intentos restantes: {$restantes}.", 401, 'ERR_CREDENTIALS');
         }
 
-        // Una sola sesion activa por usuario
         if ($u['SessionActive'] === 'S') {
             throw new DomainException('Ya existe una sesion activa para este usuario. Cierre la otra sesion para continuar.', 409, 'ERR_SESSION_ACTIVE');
         }
@@ -57,7 +55,6 @@ class AuthService
         $this->db->call('sp_Sesion_Cerrar', ['idUsuario' => $idUsuario]);
     }
 
-    /** Siempre responde igual; en desarrollo devuelve el enlace porque no hay SMTP configurado. */
     public function forgotPassword(string $mail): array
     {
         $token = bin2hex(random_bytes(32));
@@ -84,7 +81,6 @@ class AuthService
         ]);
     }
 
-    /** Datos del usuario + informacion de la ultima sesion para la pantalla de bienvenida. */
     public function bienvenida(int $idUsuario): array
     {
         [$sesiones, $fallidos] = $this->db->call('sp_Sesion_Resumen', ['idUsuario' => $idUsuario]);

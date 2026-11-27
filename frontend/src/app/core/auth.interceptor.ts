@@ -10,7 +10,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(authReq).pipe(
     catchError((err: HttpErrorResponse) => {
-      // Token vencido o sesion cerrada: volver al login (excepto en el propio login)
       if (err.status === 401 && token && !req.url.includes('/auth/login')) {
         auth.clear();
       }
@@ -19,7 +18,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   );
 };
 
-/** Extrae el mensaje legible de una respuesta de error de la API. */
 export function mensajeError(err: unknown): string {
   const e = err as HttpErrorResponse;
   if (e?.status === 0) return 'No se pudo conectar con el servidor.';

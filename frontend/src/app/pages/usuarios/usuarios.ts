@@ -6,11 +6,6 @@ import { mensajeError } from '../../core/auth.interceptor';
 import { CargaMasivaResultado, Usuario } from '../../core/models';
 import { erroresDe, identificacionValidator, passwordValidator, usernameValidator } from '../../core/validators';
 
-/**
- * Mantenimiento de usuario.
- * - ADMINISTRADOR: lista con filtros, crea, edita (menos a otros admins), cambia estado, elimina, carga masiva.
- * - Usuario normal: solo ve y edita sus propios datos.
- */
 @Component({
   selector: 'app-usuarios',
   imports: [ReactiveFormsModule],
@@ -163,7 +158,6 @@ export class UsuariosComponent implements OnInit {
     if (this.auth.isAdmin()) {
       this.buscar();
     } else {
-      // Usuario normal: solo sus propios datos
       const id = this.auth.user()!.idUsuario;
       this.api.obtenerUsuario(id).subscribe({
         next: (u) => this.editar(u),

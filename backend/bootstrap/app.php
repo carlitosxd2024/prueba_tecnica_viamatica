@@ -20,7 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        // Errores de negocio (reglas de dominio / errores lanzados por los SP)
         $exceptions->render(function (DomainException $e, Request $request) {
             return response()->json([
                 'message' => $e->getMessage(),

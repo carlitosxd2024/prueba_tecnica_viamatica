@@ -14,7 +14,6 @@ return [
             'charset'  => 'utf8',
             'prefix'   => '',
             'prefix_indexes' => true,
-            // Necesario con ODBC Driver 18 en desarrollo local
             'encrypt'  => env('DB_ENCRYPT', 'yes'),
             'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', true),
         ],

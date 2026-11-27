@@ -37,7 +37,6 @@ export class AuthService {
       }));
   }
 
-  /** Cierra la sesion en el servidor (registra el cierre) y limpia el estado local. */
   logout() {
     this.http.post(`${API_URL}/auth/logout`, {}).subscribe({
       next: () => this.clear(),
@@ -45,7 +44,6 @@ export class AuthService {
     });
   }
 
-  /** Limpia el estado local y vuelve al login (tambien lo usa el interceptor ante un 401). */
   clear() {
     try { sessionStorage.clear(); } catch { /* noop */ }
     this.user.set(null);

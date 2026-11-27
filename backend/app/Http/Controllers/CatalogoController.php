@@ -7,7 +7,6 @@ use App\Infrastructure\Persistence\SqlServerGateway;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/** Menu por rol, CRUD de roles y dashboard. */
 class CatalogoController
 {
     public function __construct(private SqlServerGateway $db) {}

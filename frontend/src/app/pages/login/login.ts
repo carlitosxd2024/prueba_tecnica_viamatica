@@ -50,7 +50,7 @@ export class LoginComponent {
 
   submit() {
     this.error.set('');
-    if (this.form.invalid) {          // no se consume el servicio si faltan datos
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }

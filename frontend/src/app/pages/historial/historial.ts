@@ -5,7 +5,6 @@ import { ApiService } from '../../core/api.service';
 import { mensajeError } from '../../core/auth.interceptor';
 import { Sesion, Usuario } from '../../core/models';
 
-/** Rol ADMINISTRADOR: revisa los inicios/cierres de sesion de un usuario especifico. */
 @Component({
   selector: 'app-historial',
   imports: [FormsModule, DatePipe],

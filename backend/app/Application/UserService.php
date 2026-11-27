@@ -36,7 +36,6 @@ class UserService
         return $u;
     }
 
-    /** Valida con las reglas de dominio y crea persona + usuario (correo generado). */
     public function crear(array $d): array
     {
         $errors = array_filter([
@@ -103,10 +102,6 @@ class UserService
         return ['sesiones' => $sesiones, 'fallidos' => $fallidos ?? []];
     }
 
-    /**
-     * Carga masiva desde .xlsx o .csv. Columnas: nombres, apellidos, identificacion,
-     * fechanacimiento (YYYY-MM-DD), usuario, password. Procesa fila a fila y devuelve un reporte.
-     */
     public function cargaMasiva(string $path): array
     {
         $sheet = IOFactory::load($path)->getActiveSheet();
@@ -124,7 +119,7 @@ class UserService
         foreach (array_slice($matrix, 1) as $i => $row) {
             $fila = $i + 2;
             if (!array_filter($row, fn ($c) => $c !== null && trim((string) $c) !== '')) {
-                continue; // fila vacia
+                continue;
             }
             $resultado['total']++;
             try {
@@ -173,7 +168,7 @@ class UserService
     private function normalizarIdentificacion(mixed $v): string
     {
         $s = is_numeric($v) ? sprintf('%.0f', $v) : trim((string) $v);
-        return (strlen($s) === 9 && ctype_digit($s)) ? '0' . $s : $s; // Excel pierde el cero inicial
+        return (strlen($s) === 9 && ctype_digit($s)) ? '0' . $s : $s;
     }
 
     private function normalizarFecha(mixed $v): string
@@ -188,6 +183,6 @@ class UserService
                 return $d->format('Y-m-d');
             }
         }
-        return $s; // la regla de dominio reportara el formato invalido
+        return $s;
     }
 }
